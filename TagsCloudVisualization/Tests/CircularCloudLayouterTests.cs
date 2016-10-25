@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using FluentAssert;
+using System.Drawing;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_should
@@ -18,11 +18,14 @@ namespace TagsCloudVisualization
             cloudLayouter = new CircularCloudLayouter(new Point(500, 500));
         }
 
-        [Test]
-        public void putFirstRectangle_atCenter()
+        [TestCase(0, 0, ExpectedResult = new int[] { -25, -25})]
+        [TestCase(100, 60, ExpectedResult = new int[] { 75, 35 })]
+        [TestCase(500, 500, ExpectedResult = new int[] { 475, 475})]
+        public int[] alwaysPutFirstRectangle_atCenter(int pointX, int pointY)
         {
+            cloudLayouter = new CircularCloudLayouter(new Point(pointX, pointY));
             var rectangle = cloudLayouter.PutNextRectangle(new Size(50, 50));
-            rectangle.ShouldBeEqualTo(new Rectangle(475, 475, 50, 50));
+            return new int[] {rectangle.Location.X, rectangle.Location.Y};
         }
 
         [Test]
@@ -38,9 +41,9 @@ namespace TagsCloudVisualization
         [TestCase(1000, ExpectedResult = 1000)]
         public int savePuttedRectangles(int rectanglesCount)
         {
-            for(var i = 0; i < rectanglesCount; i++)
+            for (var i = 0; i < rectanglesCount; i++)
                 cloudLayouter.PutNextRectangle(new Size(50, 20));
-            return cloudLayouter.RectanglesCloud.Count;
+            return cloudLayouter.Rectangles.Count;
         }
 
         [Test]
@@ -49,11 +52,11 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 50; i++)
                 cloudLayouter.PutNextRectangle(new Size(50, 20));
 
-            var leftmostRect = Math.Abs(cloudLayouter.RectanglesCloud.Min(rect => rect.Location.X) - cloudLayouter.CenterPoint.X);
-            var rightmostRect = Math.Abs(cloudLayouter.RectanglesCloud.Max(rect => rect.Location.X) - cloudLayouter.CenterPoint.X);
-            var upmostRect = Math.Abs(cloudLayouter.RectanglesCloud.Max(rect => rect.Location.Y) - cloudLayouter.CenterPoint.Y);
-            var downmostRect = Math.Abs(cloudLayouter.RectanglesCloud.Min(rect => rect.Location.Y) - cloudLayouter.CenterPoint.Y);
-            
+            var leftmostRect = Math.Abs(cloudLayouter.Rectangles.Min(rect => rect.Location.X) - cloudLayouter.CenterPoint.X);
+            var rightmostRect = Math.Abs(cloudLayouter.Rectangles.Max(rect => rect.Location.X) - cloudLayouter.CenterPoint.X);
+            var upmostRect = Math.Abs(cloudLayouter.Rectangles.Max(rect => rect.Location.Y) - cloudLayouter.CenterPoint.Y);
+            var downmostRect = Math.Abs(cloudLayouter.Rectangles.Min(rect => rect.Location.Y) - cloudLayouter.CenterPoint.Y);
+
             Assert.AreEqual(leftmostRect, rightmostRect, 60);
             Assert.AreEqual(upmostRect, downmostRect, 30);
         }
@@ -63,19 +66,11 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < 30; i++)
                 cloudLayouter.PutNextRectangle(new Size(15, 15));
-            var intersectingRectangles = cloudLayouter.RectanglesCloud.SelectMany(
-                rect => cloudLayouter.RectanglesCloud.Where(
+            var intersectingRectangles = cloudLayouter.Rectangles.SelectMany(
+                rect => cloudLayouter.Rectangles.Where(
                     otherRect => rect.IntersectsWith(otherRect) && rect != otherRect));
 
             intersectingRectangles.Count().ShouldBeEqualTo(0);
-        }
-
-        [Test]
-        public void paintRandomCloud() // not test, method for debug painting
-        {
-            var v = new Visualizator(cloudLayouter, new Size(1000, 1000));
-            v.DrawRandomTagsCloud(50, new Size(200, 60));
-            v.SaveTagsCloud(TestContext.CurrentContext.TestDirectory + "\\cloud.png");
         }
 
         [TearDown]
@@ -83,7 +78,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                
+
                 var visualizator = new Visualizator(cloudLayouter, new Size(1000, 1000));
                 var dir = TestContext.CurrentContext.TestDirectory + "\\FailedTests\\";
                 var testName = TestContext.CurrentContext.Test.Name;
@@ -95,3 +90,4 @@ namespace TagsCloudVisualization
         }
     }
 }
+
