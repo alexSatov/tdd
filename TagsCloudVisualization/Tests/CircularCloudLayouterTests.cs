@@ -18,22 +18,14 @@ namespace TagsCloudVisualization.Tests
             cloudLayouter = new CircularCloudLayouter(new Point(500, 500));
         }
 
-        [TestCase(0, 0, ExpectedResult = new int[] { -25, -25})]
-        [TestCase(100, 60, ExpectedResult = new int[] { 75, 35 })]
-        [TestCase(500, 500, ExpectedResult = new int[] { 475, 475})]
+        [TestCase(0, 0, ExpectedResult = new [] { -25, -25})]
+        [TestCase(100, 60, ExpectedResult = new [] { 75, 35 })]
+        [TestCase(500, 500, ExpectedResult = new [] { 475, 475})]
         public int[] alwaysPutFirstRectangle_atCenter(int pointX, int pointY)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(pointX, pointY));
             var rectangle = cloudLayouter.PutNextRectangle(new Size(50, 50));
-            return new int[] {rectangle.Location.X, rectangle.Location.Y};
-        }
-
-        [Test]
-        public void putFirstRectangle_atOffsetCenter()
-        {
-            cloudLayouter = new CircularCloudLayouter(new Point(25, 25));
-            var rectangle = cloudLayouter.PutNextRectangle(new Size(50, 50));
-            rectangle.ShouldBeEqualTo(new Rectangle(0, 0, 50, 50));
+            return new [] {rectangle.Location.X, rectangle.Location.Y};
         }
 
         [TestCase(0, ExpectedResult = 0)]
@@ -78,13 +70,12 @@ namespace TagsCloudVisualization.Tests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-
-                var visualizator = new Visualizator(cloudLayouter, new Size(1000, 1000));
+                var visualizator = new Visualizator(new Size(1000, 1000));
                 var dir = TestContext.CurrentContext.TestDirectory + "\\FailedTests\\";
                 var testName = TestContext.CurrentContext.Test.Name;
                 var path = dir + testName + "_cloud.png";
-                visualizator.DrawTagsCloud();
-                visualizator.SaveTagsCloud(path);
+                visualizator.DrawRectangles(cloudLayouter.Rectangles);
+                visualizator.SaveImage(path);
                 Console.WriteLine("Tag cloud visualization saved to file " + path);
             }
         }

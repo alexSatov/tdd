@@ -5,14 +5,6 @@ using System.Collections.Generic;
 
 namespace TagsCloudVisualization
 {
-    public static class RectangleExtensions
-    {
-        public static Point Center(this Rectangle rectangle)
-        {
-            return rectangle.Location + new Size(rectangle.Width / 2, rectangle.Height / 2);
-        }
-    }
-
     public class CircularCloudLayouter: IRectangleLayouter
     {
         public List<Rectangle> Rectangles { get; }
@@ -20,7 +12,7 @@ namespace TagsCloudVisualization
 
         private readonly IEnumerable<Point> spiralPoints = new SpiralPoints();
 
-        private static Point RectangleLocation(Point center, Size size)
+        private static Point GetRectangleLocation(Point center, Size size)
         {
             return new Point(center.X - size.Width / 2, center.Y - size.Height / 2);
         }
@@ -42,7 +34,7 @@ namespace TagsCloudVisualization
 
             foreach (var nextPoint in spiralPoints)
             {
-                var location = RectangleLocation(nextPoint + (Size)CenterPoint, rectangleSize);
+                var location = GetRectangleLocation(nextPoint + (Size)CenterPoint, rectangleSize);
                 rectangle = new Rectangle(location, rectangleSize);
 
                 if (InFreePlace(rectangle)) break;
@@ -55,18 +47,18 @@ namespace TagsCloudVisualization
 
         private Rectangle TryMoveToCenter(Rectangle rectangle)
         {
-            if (rectangle.Center() == CenterPoint)
+            if (rectangle.GetCenter() == CenterPoint)
                 return rectangle;
 
             var movedRect = rectangle;
-            var pointToCenter = CenterPoint - (Size)rectangle.Center();
-            pointToCenter = new Point(Math.Sign(pointToCenter.X), Math.Sign(pointToCenter.Y));
+            var vectorToCenter = CenterPoint - (Size)rectangle.GetCenter();
+            vectorToCenter = new Point(Math.Sign(vectorToCenter.X), Math.Sign(vectorToCenter.Y));
             var cachedRect = rectangle;
 
             while (InFreePlace(movedRect))
             {
                 cachedRect = movedRect;
-                movedRect.Location += new Size(pointToCenter.X, pointToCenter.Y);
+                movedRect.Location += new Size(vectorToCenter.X, vectorToCenter.Y);
             }
 
             return cachedRect;

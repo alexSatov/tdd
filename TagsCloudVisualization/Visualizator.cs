@@ -1,44 +1,44 @@
-﻿using System;
+﻿using System.Linq;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace TagsCloudVisualization
 {
     public class Visualizator
     {
-        private readonly IRectangleLayouter rectLayouter;
-        private readonly Bitmap image;
-        private readonly Graphics painter;
-        private static readonly Pen pen = new Pen(Color.DarkOrange, 3);
+        public Bitmap Image { get; private set; }
+        public Pen Pen { get; set; }
+        public Graphics Painter { get; private set; }
+        public Color BackgroundColor { get; set; }
 
 
-        public Visualizator(IRectangleLayouter rectLayouter, Size imageSize)
+        public Visualizator(Size imageSize)
         {
-            this.rectLayouter = rectLayouter;
-            image = new Bitmap(imageSize.Width, imageSize.Height);
-            painter = Graphics.FromImage(image);
-            painter.FillRectangle(new SolidBrush(Color.DarkSlateBlue), new Rectangle(new Point(0, 0), imageSize));
+            Pen = new Pen(Color.DarkOrange, 3);
+            BackgroundColor = Color.DarkSlateBlue;
+            CreateNewImage(imageSize);
         }
 
-        public void DrawRandomTagsCloud(int rectanglesCount, Size maxSize)
+        public void CreateNewImage(Size imageSize)
         {
-            var random = new Random();
-            for (var i = 0; i < rectanglesCount; i++)
-            {
-                var size = new Size(random.Next(maxSize.Width / 2, maxSize.Width),
-                    random.Next(maxSize.Height / 2, maxSize.Height));
-                var rectangle = rectLayouter.PutNextRectangle(size);
-                painter.DrawRectangle(pen, rectangle);
-            }
+            Image = new Bitmap(imageSize.Width, imageSize.Height);
+            Painter = Graphics.FromImage(Image);
+            Painter.FillRectangle(new SolidBrush(BackgroundColor), new Rectangle(new Point(0, 0), imageSize));
         }
 
-        public void DrawTagsCloud()
+        public void DrawRectangles(IEnumerable<Rectangle> rectangles)
         {
-            painter.DrawRectangles(pen, rectLayouter.Rectangles.ToArray());
+            Painter.DrawRectangles(Pen, rectangles.ToArray());
         }
 
-        public void SaveTagsCloud(string filename)
+        public void DrawRectangle(Rectangle rectangle)
         {
-            image.Save(filename);
+            Painter.DrawRectangle(Pen, rectangle);
+        }
+
+        public void SaveImage(string filename)
+        {
+            Image.Save(filename);
         }
     }
 }
