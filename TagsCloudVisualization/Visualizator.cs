@@ -36,6 +36,21 @@ namespace TagsCloudVisualization
             Painter.DrawRectangle(Pen, rectangle);
         }
 
+        public void DrawTags(IEnumerable<Tag> tags)
+        {
+            var brush = new SolidBrush(Pen.Color);
+            foreach (var tag in tags)
+            {
+                Painter.DrawString(tag.Text, tag.TagFont, brush, tag.Area.Location);
+            }
+        }
+
+        public void DrawTag(Tag tag)
+        {
+            var brush = new SolidBrush(Pen.Color);
+            Painter.DrawString(tag.Text, tag.TagFont, brush, tag.Area.Location);
+        }
+
         public void SaveImage(string filename)
         {
             Image.Save(filename);
