@@ -53,15 +53,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="IRectangleLayouter.cs" />
+    <Compile Include="Cloud\CircularCloudLayouter.cs" />
+    <Compile Include="Cloud\IRectangleLayouter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RectangleExtensions.cs" />
-    <Compile Include="SpiralPoints.cs" />
-    <Compile Include="Tag.cs" />
+    <Compile Include="Cloud\RectangleExtensions.cs" />
+    <Compile Include="Cloud\SpiralPoints.cs" />
+    <Compile Include="Graphic\Tag.cs" />
     <Compile Include="Tests\CircularCloudLayouterTests.cs" />
-    <Compile Include="Visualizator.cs" />
+    <Compile Include="Graphic\Visualizator.cs" />
+    <Compile Include="Tests\VizualizatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

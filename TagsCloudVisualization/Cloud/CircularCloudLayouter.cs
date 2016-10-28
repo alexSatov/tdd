@@ -40,12 +40,12 @@ namespace TagsCloudVisualization
                 if (InFreePlace(rectangle)) break;
             }
 
-            rectangle = TryMoveToCenter(rectangle);
+            rectangle = GetMovedToCenterRectangle(rectangle);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Rectangle TryMoveToCenter(Rectangle rectangle)
+        private Rectangle GetMovedToCenterRectangle(Rectangle rectangle)
         {
             if (rectangle.GetCenter() == CenterPoint)
                 return rectangle;
@@ -58,7 +58,7 @@ namespace TagsCloudVisualization
             while (InFreePlace(movedRect))
             {
                 cachedRect = movedRect;
-                movedRect.Location += new Size(vectorToCenter.X, vectorToCenter.Y);
+                movedRect.Location += (Size)vectorToCenter;
             }
 
             return cachedRect;

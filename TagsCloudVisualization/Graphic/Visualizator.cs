@@ -6,11 +6,10 @@ namespace TagsCloudVisualization
 {
     public class Visualizator
     {
-        public Bitmap Image { get; private set; }
         public Pen Pen { get; set; }
-        public Graphics Painter { get; private set; }
+        public Bitmap Image { get; private set; }
         public Color BackgroundColor { get; set; }
-
+        public Graphics Painter { get; private set; }
 
         public Visualizator(Size imageSize)
         {
@@ -31,11 +30,6 @@ namespace TagsCloudVisualization
             Painter.DrawRectangles(Pen, rectangles.ToArray());
         }
 
-        public void DrawRectangle(Rectangle rectangle)
-        {
-            Painter.DrawRectangle(Pen, rectangle);
-        }
-
         public void DrawTags(IEnumerable<Tag> tags)
         {
             var brush = new SolidBrush(Pen.Color);
@@ -45,15 +39,20 @@ namespace TagsCloudVisualization
             }
         }
 
-        public void DrawTag(Tag tag)
-        {
-            var brush = new SolidBrush(Pen.Color);
-            Painter.DrawString(tag.Text, tag.TagFont, brush, tag.Area.Location);
-        }
-
         public void SaveImage(string filename)
         {
             Image.Save(filename);
+        }
+
+        private void DrawRectangle(Rectangle rectangle)
+        {
+            Painter.DrawRectangle(Pen, rectangle);
+        }
+
+        private void DrawTag(Tag tag)
+        {
+            var brush = new SolidBrush(Pen.Color);
+            Painter.DrawString(tag.Text, tag.TagFont, brush, tag.Area.Location);
         }
     }
 }

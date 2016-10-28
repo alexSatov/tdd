@@ -1,57 +1,96 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization
 {
     public class Program
     {
+        private static int minFontSize;
+        private static int maxFontSize;
+        private static int minTagWeight;
+        private static int maxTagWeight;
+
         public static void Main(string[] args)
         {
-            //DrawRectanglesCloud();
-            DrawTagsCloud();
+            Console.WriteLine("Введите название файла с изображением");
+            var imageName = Console.ReadLine();
+
+            var settings = GetSettings();
+
+            var coordinates = settings["centerPoint"].Split(',').Select(int.Parse).ToArray();
+            var centerPoint = new Point(coordinates[0], coordinates[1]);
+
+            var size = settings["imageSize"].Split(',').Select(int.Parse).ToArray();
+            var imageSize = new Size(size[0], size[1]);
+
+            var textFile = settings["textFile"];
+            var maxTagsCount = int.Parse(settings["maxTagsCount"]);
+
+            var fontSizeRange = settings["fontSizeRange"].Split(',').Select(int.Parse).ToArray();
+            minFontSize = fontSizeRange[0];
+            maxFontSize = fontSizeRange[1];
+
+            DrawStatisticsTagsCloud(centerPoint, imageSize, textFile, imageName, maxTagsCount);
         }
 
-        public static void DrawTagsCloud()
+        public static Dictionary<string, string> GetSettings()
         {
-            var random = new Random();
-            var tags = new List<Tag>();
-            var cloudLayouter = new CircularCloudLayouter(new Point(500, 500));
-            var visualizator = new Visualizator(new Size(1000, 1000));
-            var words = ("#lightsout #amazing #jeep #blue #igaddict #lovehim #rainydays #ornaments #wine #decorations " +
-                         "#2012 #buyankin #creative #carols #iphonephotography #downtown #instagood #lakers #editoftheday #follow " +
-                         "#together #realshit #beauty #shoutoutback #christmas #highschool #happiness #likes4likes #styles " +
-                         "#early #yeah #skies #art #adorable #nephew #beautiful #newyears2013 #friends #bird #blue #instagood " +
-                         "#santa #yummy #girlfriend #picoftheday #nature #buyankin #sis #goodtimes #horseshow #dog #fall #commentbackteam " +
-                         "#macrogardener #want #cute #illustration #favoritesong").Split(' ');
+            return File.ReadAllLines("settings.txt")
+                .Select(line => line.Split(' '))
+                .ToDictionary(pair => pair[0], pair => pair[1]);
+        }
 
+        public static Dictionary<string, int> GetStatistics(string textFile)
+        {
+            var statistics = new Dictionary<string, int>();
 
-            foreach (var word in words)
+            var text = File.ReadAllLines(textFile);
+            var words = text
+                .SelectMany(line => Regex.Split(line, @"\W+"))
+                .Where(word => word.Length > 3)
+                .Select(word => word.ToLower())
+                .ToArray();
+            var uniqueWords = words.Distinct();
+
+            foreach (var uniqueWord in uniqueWords)
             {
-                var tag = new Tag(word, new Font("Arial", random.Next(10, 30)));
+                var count = words.Count(word => word == uniqueWord);
+                statistics.Add(uniqueWord, count);
+            }
+
+            return statistics;
+        }
+
+        public static void DrawStatisticsTagsCloud(Point center, Size imageSize, string textFile, string imageName, int tagsCount)
+        {
+            var tags = new List<Tag>();
+            var statistics = GetStatistics(textFile);
+            var visualizator = new Visualizator(imageSize);
+            var cloudLayouter = new CircularCloudLayouter(center);
+            var mostPopularWords = statistics.OrderByDescending(entry => entry.Value).Take(100).ToArray();
+
+            maxTagWeight = mostPopularWords[0].Value;
+            minTagWeight = mostPopularWords[mostPopularWords.Length - 1].Value;
+            
+            foreach (var pair in mostPopularWords)
+            {
+                var tag = new Tag(pair.Key, GetFont(pair.Value));
                 tag.Area = cloudLayouter.PutNextRectangle(tag.TagSize);
                 tags.Add(tag);
             }
 
             visualizator.DrawTags(tags);
-            visualizator.SaveImage(Directory.GetCurrentDirectory() + "\\cloud.png");
+            visualizator.SaveImage(Directory.GetCurrentDirectory() + "\\" + imageName);
         }
 
-        public static void DrawRectanglesCloud()
+        public static Font GetFont(int tagWeight)
         {
-            var random = new Random();
-            var cloudLayouter = new CircularCloudLayouter(new Point(500, 500));
-            var visualizator = new Visualizator(new Size(1000, 1000));
-            
-            for (var i = 0; i < 50; i++)
-            {
-                var size = new Size(random.Next(60, 120), random.Next(15, 30));
-                cloudLayouter.PutNextRectangle(size);
-            }
-
-            visualizator.DrawRectangles(cloudLayouter.Rectangles);
-            visualizator.SaveImage(Directory.GetCurrentDirectory() + "\\cloud.png");
+            double fontSize = minFontSize + (tagWeight - minTagWeight) * (maxFontSize - minFontSize) / (maxTagWeight - minTagWeight);
+            return new Font("Arial", (int)Math.Ceiling(fontSize));
         }
     }
 }
