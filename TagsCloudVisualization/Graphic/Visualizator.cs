@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Collections.Generic;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Graphic
 {
     public class Visualizator
     {
@@ -42,17 +42,6 @@ namespace TagsCloudVisualization
         public void SaveImage(string filename)
         {
             Image.Save(filename);
-        }
-
-        private void DrawRectangle(Rectangle rectangle)
-        {
-            Painter.DrawRectangle(Pen, rectangle);
-        }
-
-        private void DrawTag(Tag tag)
-        {
-            var brush = new SolidBrush(Pen.Color);
-            Painter.DrawString(tag.Text, tag.TagFont, brush, tag.Area.Location);
         }
     }
 }

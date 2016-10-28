@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
+using TagsCloudVisualization.Cloud;
 using System.Text.RegularExpressions;
+using TagsCloudVisualization.Graphic;
 
 namespace TagsCloudVisualization
 {

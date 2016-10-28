@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
 using System.Collections.Generic;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Cloud
 {
     public interface IRectangleLayouter
     {
-        Rectangle PutNextRectangle(Size rectangleSize);
         List<Rectangle> Rectangles { get; }
+        Rectangle PutNextRectangle(Size rectangleSize);
     }
 }

@@ -1,14 +1,14 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Graphic
 {
     public class Tag
     {
         public string Text { get; }
-        public Rectangle Area { get; set; }
         public Size TagSize { get; }
         public Font TagFont { get; }
+        public Rectangle Area { get; set; }
 
         public Tag(string text, Font font)
         {

@@ -2,11 +2,13 @@
 using FluentAssert;
 using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualization.Cloud;
+using TagsCloudVisualization.Graphic;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    class Vizualizator_should
+    public class Vizualizator_should
     {
         [Test]
         public void drawingOnlyPositivePoints()

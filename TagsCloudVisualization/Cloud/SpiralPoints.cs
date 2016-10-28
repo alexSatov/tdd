@@ -3,8 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 
-
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Cloud
 {
     public class SpiralPoints : IEnumerable<Point>
     {

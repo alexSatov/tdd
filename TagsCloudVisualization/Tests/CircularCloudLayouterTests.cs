@@ -4,6 +4,8 @@ using FluentAssert;
 using System.Drawing;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Cloud;
+using TagsCloudVisualization.Graphic;
 
 namespace TagsCloudVisualization.Tests
 {
