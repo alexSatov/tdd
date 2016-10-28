@@ -6,5 +6,5 @@
 ![alt text](TagsClouds/cloud4.png)
 # Раскладка прямоугольников 1
 ![alt text](TagsClouds/cloud1.png) 
-# Раскладка прямоугольников 2 
+# Раскладка прямоугольников 2
 ![alt text](TagsClouds/cloud2.png)
